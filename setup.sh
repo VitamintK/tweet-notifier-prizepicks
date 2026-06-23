@@ -4,18 +4,6 @@
 
 set -e
 
-APP_DIR="/root/prizepicks-monitor"
-
-echo "==> Creating app directory"
-mkdir -p "$APP_DIR"
-cd "$APP_DIR"
-
-echo "==> Copying files (run this from your local machine first):"
-echo "    scp monitor.py requirements.txt .env root@YOUR_VPS_IP:$APP_DIR/"
-echo ""
-echo "    Then SSH in and run this script."
-echo ""
-
 echo "==> Installing Python venv"
 sudo apt-get update -qq
 sudo apt-get install -y python3-venv python3-pip
