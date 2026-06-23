@@ -11,5 +11,5 @@ To watch logs:
 
 ---
 
-Claude Code wrote this specifically for a ubuntu VPS.
+Claude Code wrote this specifically for a ubuntu VPS. The script itself should be OS-agnostic, but the setup script and `systemd` usage may not work on a different OS.
 
