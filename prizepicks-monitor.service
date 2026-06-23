@@ -1,0 +1,16 @@
+[Unit]
+Description=PrizePicks Discount Monitor
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/root/prizepicks-monitor
+EnvironmentFile=/root/prizepicks-monitor/.env
+ExecStart=/root/prizepicks-monitor/venv/bin/python monitor.py
+Restart=on-failure
+RestartSec=30
+
+[Install]
+WantedBy=multi-user.target
