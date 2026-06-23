@@ -8,3 +8,8 @@ To erase the cache of the tweets that have already been processed:
 
 To watch logs:
 `journalctl -u prizepicks-monitor -f`
+
+---
+
+Claude Code wrote this specifically for a ubuntu VPS.
+
