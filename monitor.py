@@ -22,6 +22,7 @@ X_BEARER_TOKEN      = os.environ["X_BEARER_TOKEN"]
 OPENAI_API_KEY      = os.environ["OPENAI_API_KEY"]
 TELEGRAM_BOT_TOKEN  = os.environ["TELEGRAM_BOT_TOKEN"]
 TELEGRAM_CHAT_ID    = os.environ["TELEGRAM_CHAT_ID"]
+TELEGRAM_LOG_CHAT_ID = os.environ.get("TELEGRAM_LOG_CHAT_ID")
 
 TARGET_USERNAME = "PrizePicks"
 POLL_INTERVAL   = 15 * 60   # seconds (15 min — free X API minimum)
@@ -29,12 +30,45 @@ STATE_FILE      = Path("last_tweet_id.txt")
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 
+class TelegramLogHandler(logging.Handler):
+    """Sends log records to a Telegram chat with notifications silenced."""
+
+    MAX_LENGTH = 4000
+
+    def __init__(self, bot_token: str, chat_id: str):
+        super().__init__()
+        self._url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+        self._chat_id = chat_id
+
+    def emit(self, record: logging.LogRecord) -> None:
+        try:
+            text = self.format(record)[:self.MAX_LENGTH]
+            requests.post(
+                self._url,
+                json={
+                    "chat_id": self._chat_id,
+                    "text": text,
+                    "disable_notification": True,
+                },
+                timeout=10,
+            )
+        except Exception:
+            pass
+
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s  %(levelname)s  %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 log = logging.getLogger(__name__)
+
+if TELEGRAM_LOG_CHAT_ID:
+    _tg_handler = TelegramLogHandler(TELEGRAM_BOT_TOKEN, TELEGRAM_LOG_CHAT_ID)
+    _tg_handler.setFormatter(logging.Formatter(
+        "%(asctime)s  %(levelname)s  %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    ))
+    logging.getLogger().addHandler(_tg_handler)
 
 # ── State persistence ─────────────────────────────────────────────────────────
 
